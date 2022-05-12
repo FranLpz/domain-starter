@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './styles/App.css';
 import twitterLogo from './assets/twitter-logo.svg';
+import polygonLogo from './assets/polygonlogo.png'
+import ethLogo from './assets/ethlogo.png'
 import contractAbi from './utils/contractABI.json'
 import {ethers} from "ethers";
+import { networks } from './utils/networks'
 
 // Constants
 const TWITTER_HANDLE = '_buildspace';
@@ -17,6 +20,9 @@ const App = () => {
 	// Add some state data propertie
 	const [domain, setDomain] = useState('');
 	const [record, setRecord] = useState('');
+
+	// Create a stateful variable to store the network next to all the others
+    const [network, setNetwork] = useState('');
 
 	// Implement your connectWallet method here
 	const connectWallet = async () => {
@@ -61,6 +67,17 @@ const App = () => {
 			setCurrentAccount(account);
 		} else {
 			console.log('No authorized account found');
+		}
+
+		// Check the user's network chain ID
+		const chainId = await ethereum.request({ method: 'eth_chainId' });
+		setNetwork(networks[chainId]);
+
+		ethereum.on('chainChanged', handleChainChanged);
+
+		// Reload the page when they change networks
+		function handleChainChanged(_chainId) {
+			window.location.reload();
 		}
 
 	}
@@ -162,6 +179,11 @@ const App = () => {
 						<div className="left">
 						<p className="title">👛🏷️ Wallet Domain Service</p>
 						<p className="subtitle">Your immortal API for .wallet domains on the blockchain!</p>
+						</div>
+						{/* Display a logo and wallet connection status*/}
+						<div className="right">
+						<img alt="Network logo" className="logo" src={ network.includes("Polygon") ? polygonLogo : ethLogo} />
+							{ currentAccount ? <p> Wallet: {currentAccount.slice(0, 6)}...{currentAccount.slice(-4)} </p> : <p> Not connected </p> }
 						</div>
 					</header>
 				</div>
