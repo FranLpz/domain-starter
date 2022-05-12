@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './styles/App.css';
 import twitterLogo from './assets/twitter-logo.svg';
+import contractAbi from './utils/contractABI.json'
 import {ethers} from "ethers";
 
 // Constants
