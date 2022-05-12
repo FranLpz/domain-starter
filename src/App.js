@@ -21,6 +21,10 @@ const App = () => {
 	const [domain, setDomain] = useState('');
 	const [record, setRecord] = useState('');
 
+	// Stateful variable for loading and editing states
+	const [editing, setEditing] = useState(false);
+	const [loading, setLoading] = useState(false);
+	
 	// Create a stateful variable to store the network next to all the others
     const [network, setNetwork] = useState('');
 
@@ -171,6 +175,32 @@ const App = () => {
 		}
 	}
 
+	// This function will allow us to update our own domain
+	const updateDomain = async () => {
+		if (!record || !domain) { return }
+		setLoading(true);
+		console.log("Updating domain", domain, "with record", record);
+		try {
+			const { ethereum } = window;
+			if (ethereum) {
+				const provider = new ethers.providers.Web3Provider(ethereum);
+				const signer = provider.getSigner();
+				const contract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi.abi, signer);
+
+				let tx = await contract.setRecord(domain, record);
+				await tx.wait();
+				console.log("Record set https://mumbai.polygonscan.com/tx/"+tx.hash);
+
+				fetchMints();
+				setRecord('');
+				setDomain('');
+			}
+		} catch (error) {
+			console.log(error)
+		}
+		setLoading(false);
+	}
+
 	// Create a function to render if wallet is not connected yet
 	const renderNotConnectedContainer = () => (
 		<div className="connect-wallet-container">
@@ -213,11 +243,27 @@ const App = () => {
 					onChange={e => setRecord(e.target.value)}
 				/>
 
+				{/* If the editing variable is true, return the "Set record" and "Cancel" button */}
+				{editing ? (
 					<div className="button-container">
+						{/* This will call the updateDomain function we just made */}
+						<button className='cta-button mint-button' disabled={loading} onClick={updateDomain}>
+							Set record
+						</button>  
+						{/* This will let us get out of editing mode by setting editing to false */}
+						<button className='cta-button mint-button' onClick={() => {setEditing(false)}}>
+							Cancel
+						</button>  
+					</div>
+				) : (
+					// If editing is not true, the mint button will be returned instead
 					<button className='cta-button mint-button' disabled={loading} onClick={mintDomain}>
 						Mint
 					</button>  
+				)}
 			</div>
+		)
+	}
 		return (
 	// This runs our function when the page loads.
 	useEffect(() => {
