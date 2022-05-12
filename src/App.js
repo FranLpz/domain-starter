@@ -78,8 +78,8 @@ const App = () => {
 				<div className="header-container">
 					<header>
 						<div className="left">
-						<p className="title">👛🏷️ Wallet Name Service</p>
-						<p className="subtitle">Your immortal API on the blockchain!</p>
+						<p className="title">👛🏷️ Wallet Domain Service</p>
+						<p className="subtitle">Your immortal API for .wallet domains on the blockchain!</p>
 						</div>
 					</header>
 				</div>
