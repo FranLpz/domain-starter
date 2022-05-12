@@ -14,7 +14,7 @@ You only need to have a MetaMask account conected to the Mumbai Test Network (If
 
 You also will need MATIC to mint your awesome domain! So if you don't have any you can always request some [here](https://faucet.polygon.technology/) in the faucet.
 
-You can check your minted domains at [OpenSea](https://testnets.opensea.io/collection/wallet-name-service-v3)!
+You can check your minted domains at [OpenSea](https://testnets.opensea.io/collection/wallet-domain-service)!
 
 ---
 ### **Questions?**
