@@ -166,6 +166,8 @@ const App = () => {
 
 					console.log("Record set! https://mumbai.polygonscan.com/tx/"+tx.hash);
 
+					alert(`You have minted the domain ${domain}.wallet!!!`)
+
 					// Call fetchMints after 2 seconds
 					setTimeout(() => {
 						fetchMints();
