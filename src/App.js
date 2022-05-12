@@ -25,6 +25,9 @@ const App = () => {
 	const [editing, setEditing] = useState(false);
 	const [loading, setLoading] = useState(false);
 	
+	// Stateful variable for fetch mints
+	const [mints, setMints] = useState([]);
+	
 	// Create a stateful variable to store the network next to all the others
     const [network, setNetwork] = useState('');
 
@@ -163,6 +166,11 @@ const App = () => {
 
 					console.log("Record set! https://mumbai.polygonscan.com/tx/"+tx.hash);
 
+					// Call fetchMints after 2 seconds
+					setTimeout(() => {
+						fetchMints();
+					}, 2000);			  
+
 					setRecord('');
 					setDomain('');
 				} else {
@@ -174,6 +182,46 @@ const App = () => {
 			alert("Transaction failed! Please try again");
 		}
 	}
+
+	// Fetch mints
+	const fetchMints = async () => {
+		console.log('Fetch mints')
+		try {
+			const { ethereum } = window;
+			if (ethereum) {
+				const provider = new ethers.providers.Web3Provider(ethereum);
+				const signer = provider.getSigner();
+				const contract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi.abi, signer);
+
+				// Get all the domain names from our contract
+				const names = await contract.getAllNames();
+				console.log('NAMES ', names)
+
+				// For each name, get the recrod and the address
+				const mintRecords = await Promise.all(names.map(async (name) => {
+					const mintRecord = await contract.records(name);
+					const owner = await contract.domains(name);
+					return {
+						id: names.indexOf(name),
+						name: name,
+						record: mintRecord,
+						owner: owner,
+					};
+				}));
+				console.log("MINTS FETCHED", mintRecords);
+				setMints(mintRecords);
+			}
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	// This will run any time currentAccount or network are changed
+	useEffect(() => {
+		if (network === 'Polygon Mumbai Testnet') {
+			fetchMints();	
+		}
+	}, [currentAccount, network]);
 
 	// This function will allow us to update our own domain
 	const updateDomain = async () => {
